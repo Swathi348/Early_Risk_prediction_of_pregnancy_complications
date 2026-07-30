@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FetalGuard — Prenatal Risk Intelligence</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --navy:    #0B1D3A;
+    --teal:    #0E7C7B;
+    --teal-lt: #14A8A7;
+    --rose:    #C0392B;
+    --amber:   #E67E22;
+    --green:   #1A9E5C;
+    --pearl:   #F7F9FC;
+    --mist:    #EEF3F8;
+    --ink:     #1C2B3A;
+    --slate:   #5A7184;
+    --border:  #D6E0EA;
+    --white:   #FFFFFF;
+    --purple:  #6C3FC5;
+  }
+
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--pearl);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  .page { display:none; min-height:100vh; }
+  .page.active { display:flex; flex-direction:column; }
+
+  /* LANDING PAGE */
+  #page-landing {
+    background: var(--navy);
+    position: relative;
+    overflow: hidden;
+  }
+
+  #page-landing::before {
+    content:'';
+    position:absolute; inset:0;
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 30%, rgba(14,124,123,0.25) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 60% at 80% 70%, rgba(108,63,197,0.18) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 60% 10%, rgba(20,168,167,0.12) 0%, transparent 60%);
+    pointer-events:none;
+  }
+
+  .land-nav {
+    position: relative; z-index:10;
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 24px 60px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .land-logo {
+    font-family:'DM Serif Display', serif;
+    font-size: 22px; color: var(--white);
+    letter-spacing: -0.3px;
+  }
+  .land-logo span { color: var(--teal-lt); }
+  .land-nav-links { display:flex; gap:8px; }
+  .btn-nav {
+    padding: 9px 22px;
+    border-radius: 8px;
+    font-size: 14px; font-weight:500;
+    cursor: pointer; border:none;
+    transition: all 0.18s;
+  }
+  .btn-ghost {
+    background: transparent;
+    color: rgba(255,255,255,0.75);
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,0.08); color:#fff; }
+  .btn-teal { background: var(--teal); color: #fff; }
+  .btn-teal:hover { background: var(--teal-lt); }
+
+  .land-hero {
+    flex:1; position:relative; z-index:5;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    text-align:center; padding: 80px 40px 60px;
+  }
+
+  .hero-eyebrow {
+    display:inline-flex; align-items:center; gap:8px;
+    background: rgba(14,124,123,0.18);
+    border: 1px solid rgba(14,124,123,0.4);
+    color: var(--teal-lt);
+    font-size: 12px; font-weight:600; letter-spacing:1.5px;
+    text-transform:uppercase; padding: 6px 16px; border-radius:20px;
+    margin-bottom: 32px;
+  }
+  .hero-eyebrow::before { content:'●'; font-size:8px; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .hero-h1 {
+    font-family:'DM Serif Display', serif;
+    font-size: clamp(40px, 6vw, 72px);
+    line-height: 1.08;
+    color: var(--white);
+    max-width: 820px;
+    margin-bottom: 24px;
+  }
+  .hero-h1 em { font-style:italic; color: var(--teal-lt); }
+
+  .hero-sub {
+    font-size: 17px; font-weight:300; color: rgba(255,255,255,0.62);
+    max-width: 560px; line-height:1.7; margin-bottom:44px;
+  }
+
+  .hero-cta { display:flex; gap:14px; flex-wrap:wrap; justify-content:center; }
+
+  .btn-primary {
+    padding: 15px 36px; border-radius:12px;
+    background: linear-gradient(135deg, var(--teal), var(--teal-lt));
+    color:#fff; font-size:16px; font-weight:600;
+    border:none; cursor:pointer;
+    box-shadow: 0 8px 28px rgba(14,124,123,0.4);
+    transition: all 0.2s; letter-spacing:0.2px;
+  }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 12px 36px rgba(14,124,123,0.5); }
+
+  .btn-outline {
+    padding: 15px 32px; border-radius:12px;
+    background: transparent;
+    color:rgba(255,255,255,0.8); font-size:16px; font-weight:500;
+    border: 1px solid rgba(255,255,255,0.25);
+    cursor:pointer; transition: all 0.2s;
+  }
+  .btn-outline:hover { background:rgba(255,255,255,0.06); color:#fff; }
+
+  .land-stats {
+    position:relative; z-index:5;
+    display:flex; justify-content:center; gap:0;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding: 36px 60px;
+  }
+  .stat-item {
+    flex:1; max-width:200px;
+    text-align:center; padding: 0 32px;
+    border-right: 1px solid rgba(255,255,255,0.08);
+  }
+  .stat-item:last-child { border-right:none; }
+  .stat-num {
+    font-family:'DM Serif Display', serif;
+    font-size: 36px; color: var(--teal-lt); line-height:1;
+  }
+  .stat-lbl {
+    font-size:12px; color:rgba(255,255,255,0.45);
+    margin-top:6px; letter-spacing:0.5px;
+  }
+
+  .land-features {
+    position:relative; z-index:5;
+    display:flex; gap:16px;
+    padding: 0 60px 60px; flex-wrap:wrap; justify-content:center;
+  }
+  .feat-card {
+    flex:1; min-width:220px; max-width:280px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius:16px; padding:24px;
+    transition: background 0.2s;
+  }
+  .feat-card:hover { background:rgba(255,255,255,0.08); }
+  .feat-icon {
+    width:44px; height:44px; border-radius:12px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:20px; margin-bottom:14px;
+  }
+  .feat-icon.teal  { background:rgba(14,124,123,0.25); }
+  .feat-icon.purp  { background:rgba(108,63,197,0.25); }
+  .feat-icon.amber { background:rgba(230,126,34,0.2); }
+  .feat-title { font-size:15px; font-weight:600; color:#fff; margin-bottom:8px; }
+  .feat-desc  { font-size:13px; color:rgba(255,255,255,0.5); line-height:1.6; }
+
+  /* AUTH PAGE */
+  #page-auth { background: var(--pearl); flex-direction: row; }
+
+  .auth-left {
+    width: 42%;
+    background: var(--navy);
+    display:flex; flex-direction:column; justify-content:center;
+    padding: 60px 56px;
+    position:relative; overflow:hidden;
+  }
+  .auth-left::after {
+    content:'';
+    position:absolute; bottom:-80px; right:-80px;
+    width:320px; height:320px; border-radius:50%;
+    background: radial-gradient(circle, rgba(14,124,123,0.3) 0%, transparent 70%);
+    pointer-events:none;
+  }
+  .auth-brand {
+    font-family:'DM Serif Display', serif;
+    font-size:26px; color:#fff; margin-bottom:48px;
+  }
+  .auth-brand span { color: var(--teal-lt); }
+  .auth-tagline {
+    font-family:'DM Serif Display', serif;
+    font-size: clamp(24px,3vw,36px);
+    color:#fff; line-height:1.2; margin-bottom:20px;
+  }
+  .auth-tagline em { color:var(--teal-lt); font-style:italic; }
+  .auth-left-sub {
+    font-size:15px; color:rgba(255,255,255,0.5);
+    line-height:1.7; max-width:320px; margin-bottom:40px;
+  }
+  .auth-pills { display:flex; flex-wrap:wrap; gap:10px; }
+  .auth-pill {
+    background:rgba(255,255,255,0.07);
+    border:1px solid rgba(255,255,255,0.12);
+    border-radius:20px; padding:6px 14px;
+    font-size:12px; color:rgba(255,255,255,0.6);
+  }
+  .auth-right {
+    flex:1; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; padding: 60px 40px;
+  }
+  .auth-box { width:100%; max-width:420px; }
+  .auth-tabs {
+    display:flex; background:var(--mist);
+    border-radius:12px; padding:4px; margin-bottom:32px;
+  }
+  .auth-tab {
+    flex:1; padding:10px; text-align:center;
+    font-size:14px; font-weight:500; color:var(--slate);
+    cursor:pointer; border-radius:9px; transition:all 0.18s;
+    border:none; background:transparent;
+  }
+  .auth-tab.active {
+    background:var(--white); color:var(--navy);
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+  }
+  .auth-panel { display:none; }
+  .auth-panel.active { display:block; }
+  .auth-panel h2 { font-size:24px; font-weight:700; color:var(--navy); margin-bottom:6px; }
+  .auth-panel .sub { font-size:14px; color:var(--slate); margin-bottom:28px; }
+
+  .form-group { margin-bottom:18px; }
+  .form-group label {
+    display:block; font-size:13px; font-weight:500;
+    color:var(--ink); margin-bottom:7px;
+  }
+  .form-group input, .form-group select {
+    width:100%; padding:12px 14px;
+    border:1.5px solid var(--border);
+    border-radius:10px; font-size:14px;
+    color:var(--ink); background:var(--white);
+    outline:none; transition:border-color 0.18s;
+    font-family:'Inter', sans-serif;
+  }
+  .form-group input:focus, .form-group select:focus { border-color:var(--teal); }
+  .form-group input::placeholder { color:#aab8c8; }
+  .form-row { display:flex; gap:14px; }
+  .form-row .form-group { flex:1; }
+  .form-hint { font-size:12px; color:var(--slate); margin-top:5px; }
+
+  .btn-submit {
+    width:100%; padding:14px; border-radius:10px; border:none;
+    background: linear-gradient(135deg, var(--teal), var(--teal-lt));
+    color:#fff; font-size:15px; font-weight:600;
+    cursor:pointer; transition:all 0.2s;
+    letter-spacing:0.2px; margin-top:6px;
+    font-family:'Inter', sans-serif;
+  }
+  .btn-submit:hover { opacity:0.92; transform:translateY(-1px); }
+
+  .auth-divider {
+    text-align:center; margin:20px 0;
+    position:relative; font-size:13px; color:var(--slate);
+  }
+  .auth-divider::before, .auth-divider::after {
+    content:''; position:absolute; top:50%;
+    width:40%; height:1px; background:var(--border);
+  }
+  .auth-divider::before { left:0; }
+  .auth-divider::after  { right:0; }
+
+  .msg-box {
+    padding:12px 14px; border-radius:8px;
+    font-size:13px; margin-bottom:16px; display:none;
+  }
+  .msg-box.success { background:#e8faf3; color:#1a9e5c; border:1px solid #b2e8cc; display:block; }
+  .msg-box.error   { background:#fdf0ef; color:#c0392b; border:1px solid #f5bcb9; display:block; }
+
+  .auth-back {
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:13px; color:var(--slate); cursor:pointer;
+    border:none; background:none; margin-bottom:24px;
+    transition:color 0.15s;
+  }
+  .auth-back:hover { color:var(--teal); }
+
+  /* ============ SHARED APP SHELL (select / predict pages) ============ */
+  .app-nav {
+    background:var(--white); border-bottom:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 40px; position:sticky; top:0; z-index:100;
+  }
+  .app-nav .logo { font-family:'DM Serif Display',serif; font-size:20px; color:var(--navy); cursor:pointer; }
+  .app-nav .logo span { color:var(--teal); }
+  .nav-user { display:flex; align-items:center; gap:12px; }
+  .nav-avatar {
+    width:36px; height:36px; border-radius:50%;
+    background:linear-gradient(135deg,var(--teal),var(--purple));
+    display:flex; align-items:center; justify-content:center;
+    font-size:14px; font-weight:700; color:#fff;
+  }
+  .nav-username { font-size:14px; font-weight:500; color:var(--ink); }
+  .btn-logout {
+    padding:7px 16px; border-radius:8px;
+    border:1px solid var(--border);
+    background:transparent; font-size:13px;
+    color:var(--slate); cursor:pointer;
+    transition:all 0.15s; font-family:'Inter',sans-serif;
+  }
+  .btn-logout:hover { border-color:var(--rose); color:var(--rose); }
+
+  /* ============ PAGE: MODE SELECT ============ */
+  #page-select { background: var(--pearl); }
+  .select-body {
+    flex:1; display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    padding: 60px 24px; text-align:center;
+  }
+  .select-eyebrow {
+    font-size:12px; font-weight:600; letter-spacing:1.5px;
+    text-transform:uppercase; color:var(--teal); margin-bottom:12px;
+  }
+  .select-title {
+    font-family:'DM Serif Display', serif;
+    font-size: clamp(28px,4vw,40px);
+    color:var(--navy); margin-bottom:12px;
+  }
+  .select-sub {
+    font-size:15px; color:var(--slate); max-width:520px;
+    line-height:1.6; margin-bottom:48px;
+  }
+  .select-cards {
+    display:flex; gap:24px; flex-wrap:wrap; justify-content:center;
+    max-width:820px;
+  }
+  .mode-card {
+    width:320px; background:var(--white);
+    border:1.5px solid var(--border); border-radius:20px;
+    padding:36px 30px; text-align:left; cursor:pointer;
+    transition: all 0.2s;
+  }
+  .mode-card:hover {
+    border-color:var(--teal); transform:translateY(-4px);
+    box-shadow:0 16px 40px rgba(14,29,58,0.1);
+  }
+  .mode-icon {
+    width:56px; height:56px; border-radius:16px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:26px; margin-bottom:20px;
+  }
+  .mode-icon.numerical { background:rgba(108,63,197,0.12); }
+  .mode-icon.image     { background:rgba(14,124,123,0.12); }
+  .mode-card h3 { font-size:19px; font-weight:700; color:var(--navy); margin-bottom:10px; }
+  .mode-card p  { font-size:13.5px; color:var(--slate); line-height:1.6; margin-bottom:20px; }
+  .mode-card .mode-cta {
+    font-size:13px; font-weight:600; color:var(--teal);
+    display:flex; align-items:center; gap:6px;
+  }
+  .mode-tags { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:18px; }
+  .mode-tag {
+    font-size:11px; background:var(--mist); color:var(--slate);
+    padding:3px 10px; border-radius:20px;
+  }
+
+  /* ============ SIDEBAR (shared by both predict pages) ============ */
+  .predict-body { flex:1; display:flex; gap:0; }
+  .predict-sidebar {
+    width:220px; background:var(--white);
+    border-right:1px solid var(--border);
+    padding:28px 20px;
+    display:flex; flex-direction:column; gap:6px;
+  }
+  .sidebar-section-label {
+    font-size:10px; font-weight:600; letter-spacing:1.5px;
+    text-transform:uppercase; color:var(--slate);
+    padding:10px 12px 6px; margin-top:4px;
+  }
+  .sidebar-item {
+    display:flex; align-items:center; gap:10px;
+    padding:10px 12px; border-radius:9px;
+    font-size:14px; color:var(--slate);
+    cursor:pointer; transition:all 0.15s;
+  }
+  .sidebar-item:hover { background:var(--mist); color:var(--ink); }
+  .sidebar-item.active { background:rgba(14,124,123,0.1); color:var(--teal); font-weight:500; }
+  .sidebar-item .si-icon { font-size:16px; width:22px; text-align:center; }
+
+  .predict-main { flex:1; padding:36px 44px; overflow-y:auto; }
+  .predict-title { font-size:22px; font-weight:700; color:var(--navy); margin-bottom:4px; }
+  .predict-sub { font-size:14px; color:var(--slate); margin-bottom:28px; }
+
+  .error-banner {
+    background:#fdf0ef; border:1px solid #f5bcb9; color:var(--rose);
+    border-radius:10px; padding:12px 16px; font-size:14px;
+    margin-bottom:16px; display:none;
+  }
+  .error-banner.show { display:block; }
+
+  /* ============ IMAGE UPLOAD ============ */
+  .upload-zone {
+    border:2px dashed var(--border);
+    border-radius:16px; background:var(--white);
+    padding:44px 32px; text-align:center;
+    cursor:pointer; transition:all 0.2s;
+    position:relative; margin-bottom:24px;
+  }
+  .upload-zone:hover, .upload-zone.drag {
+    border-color:var(--teal); background:rgba(14,124,123,0.03);
+  }
+  .upload-zone input[type="file"] {
+    position:absolute; inset:0; opacity:0; cursor:pointer;
+  }
+  .upload-icon { font-size:40px; margin-bottom:12px; }
+  .upload-zone h3 { font-size:16px; font-weight:600; color:var(--navy); margin-bottom:6px; }
+  .upload-zone p  { font-size:13px; color:var(--slate); }
+  .upload-zone .accepted { font-size:12px; color:#aab8c8; margin-top:8px; }
+
+  .preview-img {
+    max-width:100%; max-height:220px; border-radius:10px;
+    object-fit:cover; display:none; margin:0 auto;
+  }
+  .preview-name { font-size:13px; color:var(--teal); margin-top:8px; display:none; }
+
+  /* ============ NUMERICAL FORM ============ */
+  .numeric-form-card {
+    background:var(--white); border:1px solid var(--border);
+    border-radius:16px; padding:28px 30px; margin-bottom:24px;
+  }
+  .numeric-grid {
+    display:grid; grid-template-columns:1fr 1fr; gap:18px 20px;
+  }
+  .numeric-grid .form-group { margin-bottom:0; }
+  .unit-tag { font-size:12px; color:var(--slate); margin-top:5px; }
+  .numeric-section-label {
+    grid-column:1/-1; font-size:11px; font-weight:600; letter-spacing:1.2px;
+    text-transform:uppercase; color:var(--teal); margin-top:6px;
+    border-top:1px solid var(--border); padding-top:16px;
+  }
+  .numeric-section-label:first-child { border-top:none; padding-top:0; margin-top:0; }
+
+  /* ============ SHARED BUTTONS / RESULTS ============ */
+  .btn-analyze {
+    display:inline-flex; align-items:center; gap:10px;
+    padding:14px 36px; border-radius:12px; border:none;
+    background:linear-gradient(135deg,var(--teal),var(--teal-lt));
+    color:#fff; font-size:15px; font-weight:600;
+    cursor:pointer; transition:all 0.2s;
+    font-family:'Inter',sans-serif;
+    box-shadow:0 6px 24px rgba(14,124,123,0.35);
+  }
+  .btn-analyze:hover { transform:translateY(-2px); box-shadow:0 10px 32px rgba(14,124,123,0.45); }
+  .btn-analyze:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+
+  .btn-secondary-flat {
+    padding:14px 20px;border-radius:12px;border:1.5px solid var(--border);
+    background:transparent;color:var(--slate);cursor:pointer;
+    font-family:'Inter',sans-serif;font-size:14px;
+  }
+
+  .spinner {
+    width:18px; height:18px; border-radius:50%;
+    border:2px solid rgba(255,255,255,0.4);
+    border-top-color:#fff;
+    animation:spin 0.7s linear infinite;
+    display:none;
+  }
+  @keyframes spin { to{transform:rotate(360deg)} }
+
+  .results-grid {
+    display:grid; grid-template-columns:1fr 1fr;
+    gap:20px; margin-top:28px;
+  }
+  .res-card {
+    background:var(--white); border-radius:16px;
+    border:1px solid var(--border); padding:24px; overflow:hidden;
+  }
+  .res-card.full { grid-column:1/-1; }
+  .res-card-title {
+    font-size:11px; font-weight:600; letter-spacing:1.5px;
+    text-transform:uppercase; color:var(--slate); margin-bottom:16px;
+  }
+
+  .risk-badge {
+    display:inline-flex; align-items:center; gap:10px;
+    padding:10px 20px; border-radius:50px;
+    font-size:18px; font-weight:700; margin-bottom:12px;
+  }
+  .risk-badge.high   { background:#fdf0ef; color:var(--rose); border:1.5px solid #f5bcb9; }
+  .risk-badge.medium { background:#fef6ec; color:var(--amber); border:1.5px solid #fad7a5; }
+  .risk-badge.low    { background:#e8faf3; color:var(--green); border:1.5px solid #b2e8cc; }
+
+  .confidence-bar-wrap { margin-top:14px; }
+  .confidence-bar-label {
+    display:flex; justify-content:space-between;
+    font-size:13px; color:var(--slate); margin-bottom:8px;
+  }
+  .confidence-bar-bg { height:8px; border-radius:4px; background:var(--mist); overflow:hidden; }
+  .confidence-bar-fill {
+    height:100%; border-radius:4px;
+    background:linear-gradient(90deg,var(--teal),var(--teal-lt));
+    transition:width 0.8s ease;
+  }
+
+  .xai-card {
+    background:linear-gradient(135deg,#f5f0ff,#f0f9ff);
+    border:1px solid #d4c5f5; border-left:4px solid var(--purple);
+    border-radius:14px; padding:22px 24px;
+  }
+  .xai-header { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+  .xai-badge {
+    background:var(--purple); color:#fff;
+    font-size:10px; font-weight:700; letter-spacing:1.5px;
+    padding:3px 10px; border-radius:20px; text-transform:uppercase;
+  }
+  .xai-title { font-size:15px; font-weight:600; color:#4c1d95; }
+  .xai-body { font-size:14px; color:#374151; line-height:1.8; white-space:pre-wrap; }
+
+  .advice-row {
+    display:flex; gap:10px; align-items:flex-start;
+    padding:12px 14px; border-radius:10px;
+    background:var(--mist); margin-bottom:10px;
+    font-size:13.5px; color:var(--ink); line-height:1.5;
+  }
+  .advice-row .ai { font-size:16px; flex-shrink:0; margin-top:1px; }
+
+  .img-pair { display:flex; gap:20px; flex-wrap:wrap; }
+  .img-box {
+    flex:1; min-width:240px;
+    border:1px solid var(--border); border-radius:12px; overflow:hidden;
+  }
+  .img-box-label {
+    padding:10px 14px;
+    font-size:11px; font-weight:600; letter-spacing:1px;
+    text-transform:uppercase; color:var(--slate);
+    background:var(--mist); border-bottom:1px solid var(--border);
+  }
+  .img-box img {
+    width:100%; display:block;
+    max-height:360px; object-fit:contain; background:#f0f4f8;
+  }
+
+  .gradcam-loading {
+    height:360px; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:10px;
+    color:var(--slate); font-size:13px;
+  }
+  .gradcam-loading .mini-spin {
+    width:28px; height:28px; border-radius:50%;
+    border:3px solid var(--mist); border-top-color:var(--teal);
+    animation:spin 0.8s linear infinite;
+  }
+
+  .result-area { display:none; }
+
+  .loading-overlay {
+    display:none; position:fixed; inset:0;
+    background:rgba(11,29,58,0.65); backdrop-filter:blur(4px);
+    z-index:999; flex-direction:column;
+    align-items:center; justify-content:center; gap:16px;
+  }
+  .loading-overlay.show { display:flex; }
+  .loading-ring {
+    width:56px; height:56px; border-radius:50%;
+    border:4px solid rgba(255,255,255,0.15);
+    border-top-color:var(--teal-lt);
+    animation:spin 0.8s linear infinite;
+  }
+  .loading-txt { color:#fff; font-size:16px; font-weight:500; }
+  .loading-sub { color:rgba(255,255,255,0.5); font-size:13px; }
+
+  @media(max-width:900px) {
+    .auth-left  { display:none; }
+    .land-nav   { padding:20px 24px; }
+    .land-stats { flex-wrap:wrap; }
+    .predict-sidebar { display:none; }
+    .predict-main { padding:24px 20px; }
+    .results-grid { grid-template-columns:1fr; }
+    .numeric-grid { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- PAGE 1: LANDING -->
+<div id="page-landing" class="page active">
+  <nav class="land-nav">
+    <div class="land-logo">Fetal<span>Guard</span></div>
+    <div class="land-nav-links">
+      <button class="btn-nav btn-ghost" onclick="showPage('auth','login')">Sign In</button>
+      <button class="btn-nav btn-teal"  onclick="showPage('auth','register')">Get Started</button>
+    </div>
+  </nav>
+
+  <div class="land-hero">
+    <div class="hero-eyebrow">AI-Powered Prenatal Intelligence</div>
+    <h1 class="hero-h1">
+      Early Risk Prediction<br>for <em>Pregnancy Complications</em>
+    </h1>
+    <p class="hero-sub">
+      Choose between an ultrasound image analysis or a maternal vitals
+      screening and receive an instant, explainable risk assessment —
+      powered by deep learning, Grad-CAM, and LLaMA-3 clinical narration.
+    </p>
+    <div class="hero-cta">
+      <button class="btn-primary" onclick="showPage('auth','register')">Start Predicting →</button>
+      <button class="btn-outline" onclick="showPage('auth','login')">Sign In to Continue</button>
+    </div>
+  </div>
+
+  <div class="land-stats">
+    <div class="stat-item"><div class="stat-num">2</div><div class="stat-lbl">Prediction Modes</div></div>
+    <div class="stat-item"><div class="stat-num">3</div><div class="stat-lbl">Risk Categories</div></div>
+    <div class="stat-item"><div class="stat-num">XAI</div><div class="stat-lbl">Explainable Output</div></div>
+    <div class="stat-item"><div class="stat-num">LLM</div><div class="stat-lbl">Clinical Narration</div></div>
+  </div>
+
+  <div class="land-features">
+    <div class="feat-card">
+      <div class="feat-icon teal">🧬</div>
+      <div class="feat-title">Numerical Risk Model</div>
+      <div class="feat-desc">A random forest model trained on maternal vitals and history — age, blood pressure, glucose, BMI, and more — classifies pregnancy risk instantly.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon purp">🔍</div>
+      <div class="feat-title">Image + Grad-CAM</div>
+      <div class="feat-desc">EfficientNet-B0 on fetal ultrasound images, with Grad-CAM heat maps revealing exactly which regions drove the prediction.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon amber">💬</div>
+      <div class="feat-title">LLaMA-3 Clinical Notes</div>
+      <div class="feat-desc">Groq-powered LLaMA-3 generates a plain-language explanation grounded in the actual prediction — for both modes.</div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 2: AUTH -->
+<div id="page-auth" class="page">
+  <div class="auth-left">
+    <div class="auth-brand">Fetal<span>Guard</span></div>
+    <div class="auth-tagline">Predict risk.<br><em>Protect lives.</em></div>
+    <p class="auth-left-sub">
+      A clinical-grade AI system for early identification of pregnancy
+      complications — designed to augment, not replace, medical expertise.
+    </p>
+    <div class="auth-pills">
+      <span class="auth-pill">EfficientNet-B0</span>
+      <span class="auth-pill">Grad-CAM</span>
+      <span class="auth-pill">Random Forest</span>
+      <span class="auth-pill">LLaMA-3</span>
+      <span class="auth-pill">Flask API</span>
+    </div>
+  </div>
+
+  <div class="auth-right">
+    <div class="auth-box">
+      <button class="auth-back" onclick="showPage('landing')">← Back to Home</button>
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login"    onclick="switchTab('login')">Sign In</button>
+        <button class="auth-tab"        id="tab-register" onclick="switchTab('register')">Register</button>
+      </div>
+      <div class="msg-box" id="auth-msg"></div>
+
+      <!-- LOGIN -->
+      <div class="auth-panel active" id="panel-login">
+        <h2>Welcome back</h2>
+        <p class="sub">Sign in to access your prediction dashboard</p>
+        <div class="form-group">
+          <label>Email address</label>
+          <input type="email" id="login-email" placeholder="you@hospital.org">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="login-pass" placeholder="••••••••">
+        </div>
+        <button class="btn-submit" onclick="doLogin()">Sign In</button>
+        <div class="auth-divider" style="margin-top:20px;">or</div>
+        <p style="text-align:center;font-size:13px;color:var(--slate);margin-top:14px;">
+          Don't have an account?
+          <span style="color:var(--teal);cursor:pointer;font-weight:500;" onclick="switchTab('register')">Register here</span>
+        </p>
+      </div>
+
+      <!-- REGISTER -->
+      <div class="auth-panel" id="panel-register">
+        <h2>Create account</h2>
+        <p class="sub">Join FetalGuard to begin risk assessments</p>
+        <div class="form-row">
+          <div class="form-group"><label>First name</label><input type="text" id="reg-fname" placeholder="Swathi"></div>
+          <div class="form-group"><label>Last name</label><input type="text" id="reg-lname" placeholder="K"></div>
+        </div>
+        <div class="form-group"><label>Email address</label><input type="email" id="reg-email" placeholder="you@hospital.org"></div>
+        <div class="form-group"><label>Role</label><input type="text" id="reg-role" placeholder="Obstetrician / Radiologist / Researcher"></div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="reg-pass" placeholder="Min. 8 characters">
+          <div class="form-hint">Must contain a number and a special character.</div>
+        </div>
+        <div class="form-group"><label>Confirm password</label><input type="password" id="reg-pass2" placeholder="Repeat password"></div>
+        <button class="btn-submit" onclick="doRegister()">Create Account</button>
+        <p style="text-align:center;font-size:13px;color:var(--slate);margin-top:18px;">
+          Already have an account?
+          <span style="color:var(--teal);cursor:pointer;font-weight:500;" onclick="switchTab('login')">Sign in</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 3: MODE SELECT (shown right after login) -->
+<div id="page-select" class="page">
+  <nav class="app-nav">
+    <div class="logo" onclick="showPage('select')">Fetal<span>Guard</span></div>
+    <div class="nav-user">
+      <div class="nav-avatar" id="select-avatar">S</div>
+      <span class="nav-username" id="select-username">Swathi</span>
+      <button class="btn-logout" onclick="doLogout()">Sign Out</button>
+    </div>
+  </nav>
+
+  <div class="select-body">
+    <div class="select-eyebrow">Choose Assessment Type</div>
+    <h1 class="select-title">How would you like to assess risk?</h1>
+    <p class="select-sub">
+      Pick a numerical screening based on maternal vitals, or an image-based
+      screening based on a fetal ultrasound scan.
+    </p>
+
+    <div class="select-cards">
+      <div class="mode-card" onclick="showPage('predict-numerical')">
+        <div class="mode-icon numerical">🧬</div>
+        <h3>Numerical Prediction</h3>
+        <div class="mode-tags">
+          <span class="mode-tag">Age</span>
+          <span class="mode-tag">Blood Pressure</span>
+          <span class="mode-tag">Glucose</span>
+          <span class="mode-tag">Vitals</span>
+        </div>
+        <p>Enter maternal vitals and history — age, blood pressure, blood sugar, BMI, and more — for an instant risk classification.</p>
+        <div class="mode-cta">Start numerical screening →</div>
+      </div>
+
+      <div class="mode-card" onclick="showPage('predict-image')">
+        <div class="mode-icon image">🩻</div>
+        <h3>Image Prediction</h3>
+        <div class="mode-tags">
+          <span class="mode-tag">Ultrasound</span>
+          <span class="mode-tag">EfficientNet-B0</span>
+          <span class="mode-tag">Grad-CAM</span>
+        </div>
+        <p>Upload a fetal ultrasound image and get a risk classification with a Grad-CAM heat map showing what the model focused on.</p>
+        <div class="mode-cta">Start image screening →</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 4: NUMERICAL PREDICTION -->
+<div id="page-predict-numerical" class="page">
+  <div class="loading-overlay" id="loading-overlay-num">
+    <div class="loading-ring"></div>
+    <div class="loading-txt">Analyzing maternal vitals…</div>
+    <div class="loading-sub">Running numerical risk model</div>
+  </div>
+
+  <nav class="app-nav">
+    <div class="logo" onclick="showPage('select')">Fetal<span>Guard</span></div>
+    <div class="nav-user">
+      <div class="nav-avatar" id="num-avatar">S</div>
+      <span class="nav-username" id="num-username">Swathi</span>
+      <button class="btn-logout" onclick="doLogout()">Sign Out</button>
+    </div>
+  </nav>
+
+  <div class="predict-body">
+    <aside class="predict-sidebar">
+      <div class="sidebar-section-label">Assessment</div>
+      <div class="sidebar-item" onclick="showPage('select')"><span class="si-icon">↩️</span> Change Mode</div>
+      <div class="sidebar-item active"><span class="si-icon">🧬</span> Numerical Prediction</div>
+      <div class="sidebar-item" onclick="showPage('predict-image')"><span class="si-icon">🩻</span> Image Prediction</div>
+      <div class="sidebar-section-label">Account</div>
+      <div class="sidebar-item" onclick="doLogout()"><span class="si-icon">🚪</span> Sign Out</div>
+    </aside>
+
+    <main class="predict-main">
+      <div class="predict-title">Numerical Risk Assessment</div>
+      <p class="predict-sub">Enter maternal vitals and history to receive an AI-powered risk classification.</p>
+
+      <div class="error-banner" id="error-banner-num"></div>
+
+      <div class="numeric-form-card">
+        <div class="numeric-grid">
+          <div class="numeric-section-label">Vitals</div>
+
+          <div class="form-group">
+            <label>Age</label>
+            <input type="number" id="num-age" placeholder="e.g. 29">
+            <div class="unit-tag">years</div>
+          </div>
+          <div class="form-group">
+            <label>Heart Rate</label>
+            <input type="number" id="num-heart-rate" placeholder="e.g. 78">
+            <div class="unit-tag">beats per minute</div>
+          </div>
+          <div class="form-group">
+            <label>Systolic Blood Pressure</label>
+            <input type="number" id="num-systolic" placeholder="e.g. 120">
+            <div class="unit-tag">mmHg</div>
+          </div>
+          <div class="form-group">
+            <label>Diastolic Blood Pressure</label>
+            <input type="number" id="num-diastolic" placeholder="e.g. 80">
+            <div class="unit-tag">mmHg</div>
+          </div>
+          <div class="form-group">
+            <label>Blood Sugar (BS)</label>
+            <input type="number" step="0.1" id="num-bs" placeholder="e.g. 7.5">
+            <div class="unit-tag">mmol/L</div>
+          </div>
+          <div class="form-group">
+            <label>Body Temperature</label>
+            <input type="number" step="0.1" id="num-temp" placeholder="e.g. 98.6">
+            <div class="unit-tag">°F</div>
+          </div>
+          <div class="form-group">
+            <label>BMI</label>
+            <input type="number" step="0.1" id="num-bmi" placeholder="e.g. 24.5">
+            <div class="unit-tag">kg/m²</div>
+          </div>
+
+          <div class="numeric-section-label">History</div>
+
+          <div class="form-group">
+            <label>Previous Pregnancy Complications</label>
+            <select id="num-prev-complications">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Preexisting Diabetes</label>
+            <select id="num-preexisting-diabetes">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Gestational Diabetes</label>
+            <select id="num-gestational-diabetes">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Mental Health Concerns</label>
+            <select id="num-mental-health">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+        <button class="btn-analyze" id="btn-analyze-num" onclick="runPredictionNumerical()">
+          <span id="analyze-spinner-num" class="spinner"></span>
+          <span id="analyze-txt-num">🔍 Analyze Vitals</span>
+        </button>
+        <button class="btn-secondary-flat" onclick="resetNumericalForm()">Clear</button>
+      </div>
+
+      <!-- Results -->
+      <div id="result-area-num" class="result-area">
+        <div class="results-grid">
+
+          <div class="res-card full">
+            <div class="res-card-title">Risk Classification</div>
+            <div class="risk-badge" id="risk-badge-num">—</div>
+            <div style="font-size:13px;color:var(--slate);margin-bottom:14px;" id="risk-advice-num"></div>
+            <div class="confidence-bar-wrap">
+              <div class="confidence-bar-label">
+                <span>Confidence</span><span id="conf-pct-num">—</span>
+              </div>
+              <div class="confidence-bar-bg">
+                <div class="confidence-bar-fill" id="conf-bar-num" style="width:0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="res-card">
+            <div class="res-card-title">Recommended Actions</div>
+            <div class="advice-row"><span class="ai">📅</span><span id="advice-1-num">—</span></div>
+            <div class="advice-row"><span class="ai">🏥</span><span id="advice-2-num">—</span></div>
+            <div class="advice-row"><span class="ai">📊</span><span id="advice-3-num">—</span></div>
+          </div>
+
+          <div class="res-card">
+            <div class="res-card-title">AI Clinical Explanation</div>
+            <div class="xai-card">
+              <div class="xai-header">
+                <span class="xai-badge">LLaMA-3</span>
+                <span class="xai-title">Generated Clinical Note</span>
+              </div>
+              <div class="xai-body" id="xai-body-num">—</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- PAGE 5: IMAGE PREDICTION -->
+<div id="page-predict-image" class="page">
+  <div class="loading-overlay" id="loading-overlay-img">
+    <div class="loading-ring"></div>
+    <div class="loading-txt">Analyzing ultrasound image…</div>
+    <div class="loading-sub">Running EfficientNet-B0 + Grad-CAM</div>
+  </div>
+
+  <nav class="app-nav">
+    <div class="logo" onclick="showPage('select')">Fetal<span>Guard</span></div>
+    <div class="nav-user">
+      <div class="nav-avatar" id="img-avatar">S</div>
+      <span class="nav-username" id="img-username">Swathi</span>
+      <button class="btn-logout" onclick="doLogout()">Sign Out</button>
+    </div>
+  </nav>
+
+  <div class="predict-body">
+    <aside class="predict-sidebar">
+      <div class="sidebar-section-label">Assessment</div>
+      <div class="sidebar-item" onclick="showPage('select')"><span class="si-icon">↩️</span> Change Mode</div>
+      <div class="sidebar-item" onclick="showPage('predict-numerical')"><span class="si-icon">🧬</span> Numerical Prediction</div>
+      <div class="sidebar-item active"><span class="si-icon">🩻</span> Image Prediction</div>
+      <div class="sidebar-section-label">Account</div>
+      <div class="sidebar-item" onclick="doLogout()"><span class="si-icon">🚪</span> Sign Out</div>
+    </aside>
+
+    <main class="predict-main">
+      <div class="predict-title">Fetal Ultrasound Risk Assessment</div>
+      <p class="predict-sub">Upload a fetal ultrasound image to receive an AI-powered risk classification with Grad-CAM explainability.</p>
+
+      <div class="error-banner" id="error-banner-img"></div>
+
+      <div class="upload-zone" id="upload-zone">
+        <input type="file" id="file-input" accept="image/*" onchange="onFileSelect(this)">
+        <div id="upload-placeholder">
+          <div class="upload-icon">🩻</div>
+          <h3>Drop ultrasound image here</h3>
+          <p>or click to browse your files</p>
+          <div class="accepted">Accepted: JPG, PNG, TIFF · Max 10 MB</div>
+        </div>
+        <img class="preview-img" id="preview-img" alt="Preview">
+        <div class="preview-name" id="preview-name"></div>
+      </div>
+
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+        <button class="btn-analyze" id="btn-analyze-img" onclick="runPredictionImage()" disabled>
+          <span id="analyze-spinner-img" class="spinner"></span>
+          <span id="analyze-txt-img">🔍 Analyze Image</span>
+        </button>
+        <button class="btn-secondary-flat" onclick="resetImageForm()">Clear</button>
+      </div>
+
+      <!-- Results -->
+      <div id="result-area-img" class="result-area">
+        <div class="results-grid">
+
+          <div class="res-card full">
+            <div class="res-card-title">Risk Classification</div>
+            <div class="risk-badge" id="risk-badge-img">—</div>
+            <div style="font-size:13px;color:var(--slate);margin-bottom:14px;" id="risk-advice-img"></div>
+            <div class="confidence-bar-wrap">
+              <div class="confidence-bar-label">
+                <span>Confidence</span><span id="conf-pct-img">—</span>
+              </div>
+              <div class="confidence-bar-bg">
+                <div class="confidence-bar-fill" id="conf-bar-img" style="width:0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="res-card full">
+            <div class="res-card-title">Visual Explainability — Grad-CAM</div>
+            <div class="img-pair">
+              <div class="img-box">
+                <div class="img-box-label">Original Ultrasound</div>
+                <img id="res-original" src="" alt="Original">
+              </div>
+              <div class="img-box">
+                <div class="img-box-label">Grad-CAM Heat Map</div>
+                <div id="gradcam-loading" class="gradcam-loading">
+                  <div class="mini-spin"></div>
+                  <span>Generating heat map…</span>
+                </div>
+                <img id="res-gradcam" src="" alt="Grad-CAM"
+                     style="display:none;"
+                     onload="gradcamLoaded()"
+                     onerror="gradcamError()">
+              </div>
+            </div>
+          </div>
+
+          <div class="res-card">
+            <div class="res-card-title">Recommended Actions</div>
+            <div class="advice-row"><span class="ai">📅</span><span id="advice-1-img">—</span></div>
+            <div class="advice-row"><span class="ai">🏥</span><span id="advice-2-img">—</span></div>
+            <div class="advice-row"><span class="ai">📊</span><span id="advice-3-img">—</span></div>
+          </div>
+
+          <div class="res-card">
+            <div class="res-card-title">AI Clinical Explanation</div>
+            <div class="xai-card">
+              <div class="xai-header">
+                <span class="xai-badge">LLaMA-3</span>
+                <span class="xai-title">Generated Clinical Note</span>
+              </div>
+              <div class="xai-body" id="xai-body-img">—</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+  const ADVICE = {
+    'High Risk': [
+      'Schedule an urgent consultation with a maternal-fetal medicine specialist within 24–48 hours.',
+      'Consider hospital admission or close outpatient monitoring depending on gestational age.',
+      'Order targeted investigations: Doppler flow studies, CTG, and detailed anomaly scan.'
+    ],
+    'Medium Risk': [
+      'Book a follow-up appointment with your obstetrician within the next 1–2 weeks.',
+      'Increase the frequency of antenatal visits and fetal monitoring.',
+      'Review maternal vitals, growth charts, and amniotic fluid index at next visit.'
+    ],
+    'Low Risk': [
+      'Continue with routine antenatal visits as per current schedule.',
+      'Maintain a healthy diet, regular light exercise, and adequate rest.',
+      'Report any new symptoms — bleeding, reduced fetal movement, or severe pain — promptly.'
+    ]
+  };
+
+  // ---------- Navigation ----------
+  function showPage(name, tab) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    if (name === 'auth' && tab) switchTab(tab);
+    if (name === 'select' || name === 'predict-numerical' || name === 'predict-image') {
+      loadSessionInto(name);
+    }
+    window.scrollTo(0, 0);
+  }
+
+  function switchTab(t) {
+    document.getElementById('tab-login').classList.toggle('active', t === 'login');
+    document.getElementById('tab-register').classList.toggle('active', t === 'register');
+    document.getElementById('panel-login').classList.toggle('active', t === 'login');
+    document.getElementById('panel-register').classList.toggle('active', t === 'register');
+    clearMsg();
+  }
+  function showMsg(text, type) {
+    const el = document.getElementById('auth-msg');
+    el.textContent = text; el.className = 'msg-box ' + type;
+  }
+  function clearMsg() {
+    const el = document.getElementById('auth-msg');
+    el.className = 'msg-box'; el.textContent = '';
+  }
+  function showError(id, msg) {
+    const el = document.getElementById(id);
+    el.textContent = '⚠️ ' + msg; el.classList.add('show');
+  }
+  function clearError(id) {
+    document.getElementById(id).classList.remove('show');
+  }
+
+  // ---------- Auth ----------
+  async function doRegister() {
+    const fname = document.getElementById('reg-fname').value.trim();
+    const lname = document.getElementById('reg-lname').value.trim();
+    const email = document.getElementById('reg-email').value.trim().toLowerCase();
+    const role  = document.getElementById('reg-role').value.trim();
+    const pass  = document.getElementById('reg-pass').value;
+    const pass2 = document.getElementById('reg-pass2').value;
+
+    if (!fname || !email || !pass) { showMsg('Please fill in all required fields.', 'error'); return; }
+    if (pass.length < 8)           { showMsg('Password must be at least 8 characters.', 'error'); return; }
+    if (pass !== pass2)            { showMsg('Passwords do not match.', 'error'); return; }
+
+    try {
+      const res  = await fetch('/api/register', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ fname, lname, email, role, password: pass })
+      });
+      const data = await res.json();
+      if (!data.ok) { showMsg(data.error || 'Registration failed.', 'error'); return; }
+      showMsg('Account created! Taking you to the dashboard…', 'success');
+      setTimeout(() => showPage('select'), 900);
+    } catch (e) {
+      showMsg('Server error. Is Flask running?', 'error');
+    }
+  }
+
+  async function doLogin() {
+    const email = document.getElementById('login-email').value.trim().toLowerCase();
+    const pass  = document.getElementById('login-pass').value;
+    if (!email || !pass) { showMsg('Please enter your email and password.', 'error'); return; }
+
+    try {
+      const res  = await fetch('/api/login', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ email, password: pass })
+      });
+      const data = await res.json();
+      if (!data.ok) { showMsg(data.error || 'Login failed.', 'error'); return; }
+      showPage('select');
+    } catch (e) {
+      showMsg('Server error. Is Flask running?', 'error');
+    }
+  }
+
+  async function doLogout() {
+    await fetch('/api/logout', { method: 'POST' }).catch(() => {});
+    resetImageForm();
+    resetNumericalForm();
+    showPage('landing');
+  }
+
+  async function loadSessionInto(pageName) {
+    try {
+      const res  = await fetch('/api/session');
+      const data = await res.json();
+      if (!data.ok) { showPage('landing'); return; }
+      const u = data.user;
+      const fullName = u.fname + (u.lname ? ' ' + u.lname : '');
+      const initial  = u.fname.charAt(0).toUpperCase();
+
+      const prefix = pageName === 'select' ? 'select'
+                    : pageName === 'predict-numerical' ? 'num'
+                    : 'img';
+      const nameEl = document.getElementById(prefix + '-username');
+      const avEl   = document.getElementById(prefix + '-avatar');
+      if (nameEl) nameEl.textContent = fullName;
+      if (avEl)   avEl.textContent   = initial;
+    } catch (e) {
+      showPage('landing');
+    }
+  }
+
+  window.addEventListener('DOMContentLoaded', async () => {
+    try {
+      const res  = await fetch('/api/session');
+      const data = await res.json();
+      if (data.ok) showPage('select');
+    } catch (e) {}
+  });
+
+  // ---------- Image mode ----------
+  let selectedFile = null;
+
+  function onFileSelect(input) {
+    const file = input.files[0];
+    if (!file) return;
+    selectedFile = file;
+
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = document.getElementById('preview-img');
+      img.src = e.target.result;
+      img.style.display = 'block';
+      document.getElementById('upload-placeholder').style.display = 'none';
+      document.getElementById('preview-name').textContent = file.name;
+      document.getElementById('preview-name').style.display = 'block';
+      document.getElementById('btn-analyze-img').disabled = false;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function resetImageForm() {
+    selectedFile = null;
+    const fi = document.getElementById('file-input');
+    if (fi) fi.value = '';
+    const pi = document.getElementById('preview-img');
+    if (pi) pi.style.display = 'none';
+    const pn = document.getElementById('preview-name');
+    if (pn) pn.style.display = 'none';
+    const up = document.getElementById('upload-placeholder');
+    if (up) up.style.display = 'block';
+    const btn = document.getElementById('btn-analyze-img');
+    if (btn) btn.disabled = true;
+    const ra = document.getElementById('result-area-img');
+    if (ra) ra.style.display = 'none';
+    clearError('error-banner-img');
+  }
+
+  const zone = document.getElementById('upload-zone');
+  if (zone) {
+    zone.addEventListener('dragover',  e => { e.preventDefault(); zone.classList.add('drag'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('drag'));
+    zone.addEventListener('drop', e => {
+      e.preventDefault(); zone.classList.remove('drag');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) {
+        const dt = new DataTransfer(); dt.items.add(file);
+        const fi = document.getElementById('file-input');
+        fi.files = dt.files;
+        onFileSelect(fi);
+      }
+    });
+  }
+
+  function gradcamLoaded() {
+    document.getElementById('gradcam-loading').style.display = 'none';
+    document.getElementById('res-gradcam').style.display     = 'block';
+  }
+  function gradcamError() {
+    const loading = document.getElementById('gradcam-loading');
+    loading.innerHTML = '<span style="color:var(--rose);font-size:13px;">⚠️ Heat map unavailable</span>';
+    loading.style.display = 'flex';
+  }
+
+  async function runPredictionImage() {
+    if (!selectedFile) return;
+    clearError('error-banner-img');
+
+    document.getElementById('loading-overlay-img').classList.add('show');
+    document.getElementById('result-area-img').style.display = 'none';
+    document.getElementById('btn-analyze-img').disabled = true;
+    document.getElementById('analyze-spinner-img').style.display = 'block';
+    document.getElementById('analyze-txt-img').textContent = 'Analyzing…';
+
+    document.getElementById('gradcam-loading').style.display = 'flex';
+    document.getElementById('gradcam-loading').innerHTML =
+      '<div class="mini-spin"></div><span>Generating heat map…</span>';
+    document.getElementById('res-gradcam').style.display = 'none';
+    document.getElementById('res-gradcam').src = '';
+
+    try {
+      const formData = new FormData();
+      formData.append('image', selectedFile);
+
+      const response = await fetch('/api/predict/image', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (response.status === 401) {
+        document.getElementById('loading-overlay-img').classList.remove('show');
+        showPage('auth', 'login');
+        return;
+      }
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.error || `Server returned ${response.status}`);
+      }
+
+      const data = await response.json();
+      displayImageResult(data);
+
+    } catch (err) {
+      console.error('Prediction error:', err);
+      showError('error-banner-img', err.message || 'Prediction failed. Please try again.');
+    } finally {
+      document.getElementById('loading-overlay-img').classList.remove('show');
+      document.getElementById('btn-analyze-img').disabled = false;
+      document.getElementById('analyze-spinner-img').style.display = 'none';
+      document.getElementById('analyze-txt-img').textContent = '🔍 Analyze Image';
+    }
+  }
+
+  function displayImageResult(data) {
+    const risk = data.prediction;
+    const conf = data.confidence;
+
+    const lvl   = risk.toLowerCase().replace(' risk', '');
+    const icons = { high: '🚨', medium: '⚠️', low: '✅' };
+    const badge = document.getElementById('risk-badge-img');
+    badge.className   = 'risk-badge ' + lvl;
+    badge.textContent = (icons[lvl] || '') + ' ' + risk;
+
+    document.getElementById('risk-advice-img').textContent = data.advice || '';
+    document.getElementById('conf-pct-img').textContent    = conf + '%';
+    document.getElementById('conf-bar-img').style.width    = conf + '%';
+
+    document.getElementById('res-original').src = document.getElementById('preview-img').src;
+
+    const gcUrl = data.gradcam_url + '?t=' + Date.now();
+    document.getElementById('res-gradcam').src = gcUrl;
+
+    const adv = ADVICE[risk] || ['Consult your physician.', '', ''];
+    document.getElementById('advice-1-img').textContent = adv[0] || '';
+    document.getElementById('advice-2-img').textContent = adv[1] || '';
+    document.getElementById('advice-3-img').textContent = adv[2] || '';
+
+    document.getElementById('xai-body-img').textContent = data.groq_explanation || '—';
+
+    document.getElementById('result-area-img').style.display = 'block';
+    document.getElementById('result-area-img').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ---------- Numerical mode ----------
+  function resetNumericalForm() {
+    ['num-age','num-heart-rate','num-systolic','num-diastolic','num-bs','num-temp','num-bmi'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    ['num-prev-complications','num-preexisting-diabetes','num-gestational-diabetes','num-mental-health'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '0';
+    });
+    const ra = document.getElementById('result-area-num');
+    if (ra) ra.style.display = 'none';
+    clearError('error-banner-num');
+  }
+
+  async function runPredictionNumerical() {
+    clearError('error-banner-num');
+
+    const age         = document.getElementById('num-age').value;
+    const heartRate    = document.getElementById('num-heart-rate').value;
+    const systolic     = document.getElementById('num-systolic').value;
+    const diastolic    = document.getElementById('num-diastolic').value;
+    const bs           = document.getElementById('num-bs').value;
+    const temp         = document.getElementById('num-temp').value;
+    const bmi          = document.getElementById('num-bmi').value;
+    const prevComp     = document.getElementById('num-prev-complications').value;
+    const preexDiab    = document.getElementById('num-preexisting-diabetes').value;
+    const gestDiab     = document.getElementById('num-gestational-diabetes').value;
+    const mentalHealth = document.getElementById('num-mental-health').value;
+
+    if ([age, heartRate, systolic, diastolic, bs, temp, bmi].some(v => v === '' || v === null)) {
+      showError('error-banner-num', 'Please fill in all fields before analyzing.');
+      return;
+    }
+
+    document.getElementById('loading-overlay-num').classList.add('show');
+    document.getElementById('result-area-num').style.display = 'none';
+    document.getElementById('btn-analyze-num').disabled = true;
+    document.getElementById('analyze-spinner-num').style.display = 'block';
+    document.getElementById('analyze-txt-num').textContent = 'Analyzing…';
+
+    try {
+      const payload = {
+        age: parseFloat(age),
+        heart_rate: parseFloat(heartRate),
+        systolic_bp: parseFloat(systolic),
+        diastolic_bp: parseFloat(diastolic),
+        blood_sugar: parseFloat(bs),
+        body_temp: parseFloat(temp),
+        bmi: parseFloat(bmi),
+        previous_complications: parseInt(prevComp, 10),
+        preexisting_diabetes: parseInt(preexDiab, 10),
+        gestational_diabetes: parseInt(gestDiab, 10),
+        mental_health: parseInt(mentalHealth, 10)
+      };
+
+      const response = await fetch('/api/predict/numerical', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+
+      if (response.status === 401) {
+        document.getElementById('loading-overlay-num').classList.remove('show');
+        showPage('auth', 'login');
+        return;
+      }
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.error || `Server returned ${response.status}`);
+      }
+
+      const data = await response.json();
+      displayNumericalResult(data);
+
+    } catch (err) {
+      console.error('Prediction error:', err);
+      showError('error-banner-num', err.message || 'Prediction failed. Please try again.');
+    } finally {
+      document.getElementById('loading-overlay-num').classList.remove('show');
+      document.getElementById('btn-analyze-num').disabled = false;
+      document.getElementById('analyze-spinner-num').style.display = 'none';
+      document.getElementById('analyze-txt-num').textContent = '🔍 Analyze Vitals';
+    }
+  }
+
+  function displayNumericalResult(data) {
+    const risk = data.prediction;
+    const conf = data.confidence;
+
+    const lvl   = risk.toLowerCase().replace(' risk', '');
+    const icons = { high: '🚨', medium: '⚠️', low: '✅' };
+    const badge = document.getElementById('risk-badge-num');
+    badge.className   = 'risk-badge ' + lvl;
+    badge.textContent = (icons[lvl] || '') + ' ' + risk;
+
+    document.getElementById('risk-advice-num').textContent = data.advice || '';
+    document.getElementById('conf-pct-num').textContent    = conf + '%';
+    document.getElementById('conf-bar-num').style.width    = conf + '%';
+
+    const adv = ADVICE[risk] || ['Consult your physician.', '', ''];
+    document.getElementById('advice-1-num').textContent = adv[0] || '';
+    document.getElementById('advice-2-num').textContent = adv[1] || '';
+    document.getElementById('advice-3-num').textContent = adv[2] || '';
+
+    document.getElementById('xai-body-num').textContent = data.groq_explanation || '—';
+
+    document.getElementById('result-area-num').style.display = 'block';
+    document.getElementById('result-area-num').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+</script>
+</body>
+</html>
